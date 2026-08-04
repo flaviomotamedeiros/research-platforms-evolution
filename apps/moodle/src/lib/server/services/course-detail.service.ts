@@ -1,4 +1,5 @@
 import { notFound } from '@rpe/platform-kit'
+import type { RenderedContent } from '@rpe/plugin-sdk'
 import type { Container } from '../container'
 
 export interface CourseDetail {
@@ -12,7 +13,12 @@ export interface CourseDetail {
     id: string
     name: string
     summary: string
-    materials: Array<{ id: string; kind: string; title: string; content: string }>
+    materials: Array<{
+      id: string
+      title: string
+      plugin: { id: string; displayName: string; icon: string }
+      display: RenderedContent
+    }>
     activities: Array<{
       id: string
       name: string
@@ -78,9 +84,24 @@ export async function courseDetail(c: Container, courseId: string, userId: strin
       id: s.id,
       name: s.name,
       summary: s.summary,
+      // The core never interprets material payloads: it resolves the content
+      // plugin from the registry and renders whatever medium it returns.
       materials: materials
         .filter((m) => m.sectionId === s.id)
-        .map((m) => ({ id: m.id, kind: m.kind, title: m.title, content: m.content })),
+        .map((m) => {
+          const plugin = c.plugins.getContent(m.pluginId)
+          const display: RenderedContent = plugin
+            ? plugin.render(m.content)
+            : { medium: 'html', html: '<p>Unsupported content module.</p>' }
+          return {
+            id: m.id,
+            title: m.title,
+            plugin: plugin
+              ? { id: plugin.metadata.id, displayName: plugin.displayName, icon: plugin.icon }
+              : { id: m.pluginId, displayName: m.pluginId, icon: '❓' },
+            display,
+          }
+        }),
       activities: activities
         .filter((a) => a.sectionId === s.id)
         .map((a) => {

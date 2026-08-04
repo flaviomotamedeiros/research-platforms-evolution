@@ -18,7 +18,12 @@ interface Detail {
     id: string
     name: string
     summary: string
-    materials: Array<{ id: string; kind: string; title: string; content: string }>
+    materials: Array<{
+      id: string
+      title: string
+      plugin: { id: string; displayName: string; icon: string }
+      display: { medium: 'html' | 'embed' | 'link'; html?: string; embedUrl?: string; url?: string; note?: string }
+    }>
     activities: Array<{
       id: string; name: string; description: string; dueDate: string | null
       myGrade: number | null; myMax: number | null; myFeedback: string | null
@@ -31,33 +36,32 @@ interface Detail {
 const fmtDate = (iso: string) =>
   new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
 
-const KIND_META: Record<string, { icon: string; chip: string; label: string }> = {
-  page:  { icon: '📄', chip: 'bg-brand-light',    label: 'Reading' },
-  video: { icon: '🎬', chip: 'bg-status-critical/10', label: 'Video' },
-  link:  { icon: '🔗', chip: 'bg-series-3/10',    label: 'Link' },
-}
-
-function VideoEmbed({ raw, title }: { raw: string; title: string }) {
-  let ytId = raw
-  let note = ''
-  try {
-    const parsed = JSON.parse(raw)
-    ytId = parsed.ytId
-    note = parsed.note ?? ''
-  } catch { /* legacy plain id */ }
-  return (
-    <div className="mx-6 mb-4">
-      <div className="overflow-hidden rounded-xl bg-black" style={{ aspectRatio: '16 / 9' }}>
-        <iframe
-          className="h-full w-full"
-          src={`https://www.youtube-nocookie.com/embed/${ytId}`}
-          title={title}
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-        />
+/** Generic renderer for whatever medium a content plugin returns. */
+function MaterialBody({ display, title }: {
+  display: { medium: string; html?: string; embedUrl?: string; note?: string }
+  title: string
+}) {
+  if (display.medium === 'embed' && display.embedUrl) {
+    return (
+      <div className="mx-6 mb-4">
+        <div className="overflow-hidden rounded-xl bg-black" style={{ aspectRatio: '16 / 9' }}>
+          <iframe
+            className="h-full w-full"
+            src={display.embedUrl}
+            title={title}
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+          />
+        </div>
+        {display.note && <p className="mt-2 text-xs text-ink-3">{display.note}</p>}
       </div>
-      {note && <p className="mt-2 text-xs text-ink-3">{note}</p>}
-    </div>
+    )
+  }
+  return (
+    <article
+      className="lesson-page mx-6 mb-5 rounded-xl bg-surface-0 p-6"
+      dangerouslySetInnerHTML={{ __html: display.html ?? '' }}
+    />
   )
 }
 
@@ -141,19 +145,21 @@ export default function CoursePage() {
               </header>
               <ul className="divide-y divide-black/5">
                 {s.materials.map((m) => {
-                  const meta = KIND_META[m.kind] ?? KIND_META.page
-                  if (m.kind === 'link') {
+                  if (m.display.medium === 'link') {
                     return (
                       <li key={m.id}>
                         <a
-                          href={m.content}
+                          href={m.display.url}
                           target="_blank"
                           rel="noreferrer"
                           className="flex items-center gap-3 px-6 py-3.5 transition-colors hover:bg-surface-0"
                         >
-                          <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-sm ${meta.chip}`}>{meta.icon}</span>
-                          <span className="text-sm font-medium">{m.title}</span>
-                          <span className="ml-auto text-xs text-ink-3">external link ↗</span>
+                          <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-series-3/10 text-sm">{m.plugin.icon}</span>
+                          <span className="min-w-0 flex-1">
+                            <span className="block truncate text-sm font-medium">{m.title}</span>
+                            <span className="text-xs text-ink-3">{m.plugin.displayName}</span>
+                          </span>
+                          <span className="ml-auto shrink-0 text-xs text-ink-3">open ↗</span>
                         </a>
                       </li>
                     )
@@ -165,22 +171,16 @@ export default function CoursePage() {
                         onClick={() => setOpenMaterial(open ? null : m.id)}
                         className="flex w-full items-center gap-3 px-6 py-3.5 text-left transition-colors hover:bg-surface-0"
                       >
-                        <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-sm ${meta.chip}`}>{meta.icon}</span>
+                        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-brand-light text-sm">{m.plugin.icon}</span>
                         <span className="min-w-0 flex-1">
                           <span className="block truncate text-sm font-medium">{m.title}</span>
-                          <span className="text-xs text-ink-3">{meta.label}</span>
+                          <span className="text-xs text-ink-3">{m.plugin.displayName}</span>
                         </span>
                         <span className="ml-auto shrink-0 text-xs text-ink-3">
-                          {open ? 'close ▲' : m.kind === 'video' ? 'watch ▼' : 'read ▼'}
+                          {open ? 'close ▲' : 'open ▼'}
                         </span>
                       </button>
-                      {open && m.kind === 'video' && <VideoEmbed raw={m.content} title={m.title} />}
-                      {open && m.kind === 'page' && (
-                        <article
-                          className="lesson-page mx-6 mb-5 rounded-xl bg-surface-0 p-6"
-                          dangerouslySetInnerHTML={{ __html: m.content }}
-                        />
-                      )}
+                      {open && <MaterialBody display={m.display} title={m.title} />}
                     </li>
                   )
                 })}

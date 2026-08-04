@@ -57,7 +57,7 @@ const students: Array<{ id: string; username: string; first: string; last: strin
 const profileOf = new Map(students.map((s) => [s.id, s.profile]))
 
 // ── Content types ───────────────────────────────────────────────────────────
-interface MaterialDef { kind: 'page' | 'video' | 'link'; title: string; content: string; note?: string }
+interface MaterialDef { pluginId: 'mod_page' | 'mod_video' | 'mod_url'; title: string; content: string; note?: string }
 interface UnitDef { name: string; summary: string; materials: MaterialDef[]; activityIdx: number[] }
 interface CourseDef {
   id: string; shortName: string; fullName: string; teacherId: string
@@ -67,9 +67,9 @@ interface CourseDef {
   units: UnitDef[]
 }
 
-const page = (title: string, html: string): MaterialDef => ({ kind: 'page', title, content: html })
-const video = (title: string, ytId: string, note?: string): MaterialDef => ({ kind: 'video', title, content: ytId, note })
-const link = (title: string, url: string): MaterialDef => ({ kind: 'link', title, content: url })
+const page = (title: string, html: string): MaterialDef => ({ pluginId: 'mod_page', title, content: html })
+const video = (title: string, ytId: string, note?: string): MaterialDef => ({ pluginId: 'mod_video', title, content: ytId, note })
+const link = (title: string, url: string): MaterialDef => ({ pluginId: 'mod_url', title, content: url })
 
 // ── Courses with real lecture content ───────────────────────────────────────
 const courses: CourseDef[] = [
@@ -923,8 +923,8 @@ async function main() {
       u.materials.forEach((m, mi) => {
         materialRows.push({
           id: `mat-${secId}-${mi}`, courseId: c.id, sectionId: secId,
-          kind: m.kind, title: m.title,
-          content: m.kind === 'video' ? JSON.stringify({ ytId: m.content, note: m.note ?? '' }) : m.content,
+          pluginId: m.pluginId, title: m.title,
+          content: m.pluginId === 'mod_video' ? JSON.stringify({ ytId: m.content, note: m.note ?? '' }) : m.content,
         })
       })
       for (const ai of u.activityIdx) sectionOfActivity.set(`${c.id}:${ai}`, secId)

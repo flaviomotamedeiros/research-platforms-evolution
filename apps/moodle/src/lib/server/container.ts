@@ -4,6 +4,9 @@ import { PrismaCourseRepository } from './repositories/prisma-course.repository'
 import { PrismaUserRepository } from './repositories/prisma-user.repository'
 import { PrismaEnrollmentRepository } from './repositories/prisma-enrollment.repository'
 import { authLocalPlugin } from '../plugins/auth-local'
+import { modPage } from '@rpe/mod-page'
+import { modVideo } from '@rpe/mod-video'
+import { modUrl } from '@rpe/mod-url'
 
 /**
  * Composition root — the framework-agnostic replacement for NestJS dependency
@@ -25,7 +28,13 @@ export interface Container {
 function build(): Container {
   const events = new EventBus()
 
-  const plugins = new PluginRegistry().register('auth', authLocalPlugin(prisma))
+  // Plugin installation point — the platform counterpart of Moodle's
+  // plugin directory. Content formats are plugins, exactly as upstream.
+  const plugins = new PluginRegistry()
+    .register('auth', authLocalPlugin(prisma))
+    .register('content', modPage)
+    .register('content', modVideo)
+    .register('content', modUrl)
 
   const jwt = new JwtService({
     secret: process.env.JWT_SECRET ?? 'insecure-dev-secret',

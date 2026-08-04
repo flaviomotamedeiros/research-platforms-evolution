@@ -23,6 +23,15 @@ importers:
       '@rpe/domain-kit':
         specifier: workspace:*
         version: link:../../packages/domain-kit
+      '@rpe/mod-page':
+        specifier: workspace:*
+        version: link:../../plugins/mod-page
+      '@rpe/mod-url':
+        specifier: workspace:*
+        version: link:../../plugins/mod-url
+      '@rpe/mod-video':
+        specifier: workspace:*
+        version: link:../../plugins/mod-video
       '@rpe/moodle-core':
         specifier: workspace:*
         version: link:../../domains/moodle-core
@@ -118,6 +127,36 @@ importers:
         version: 5.9.3
 
   packages/plugin-sdk:
+    devDependencies:
+      typescript:
+        specifier: ^5.6.0
+        version: 5.9.3
+
+  plugins/mod-page:
+    dependencies:
+      '@rpe/plugin-sdk':
+        specifier: workspace:*
+        version: link:../../packages/plugin-sdk
+    devDependencies:
+      typescript:
+        specifier: ^5.6.0
+        version: 5.9.3
+
+  plugins/mod-url:
+    dependencies:
+      '@rpe/plugin-sdk':
+        specifier: workspace:*
+        version: link:../../packages/plugin-sdk
+    devDependencies:
+      typescript:
+        specifier: ^5.6.0
+        version: 5.9.3
+
+  plugins/mod-video:
+    dependencies:
+      '@rpe/plugin-sdk':
+        specifier: workspace:*
+        version: link:../../packages/plugin-sdk
     devDependencies:
       typescript:
         specifier: ^5.6.0

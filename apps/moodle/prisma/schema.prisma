@@ -69,9 +69,9 @@ model Material {
   id        String @id
   courseId  String
   sectionId String
-  kind      String // page | link
+  pluginId  String // content module plugin: mod_page | mod_video | mod_url | …
   title     String
-  content   String // HTML body for pages, URL for links
+  content   String // opaque payload owned by the content plugin
 
   @@map("materials")
 }

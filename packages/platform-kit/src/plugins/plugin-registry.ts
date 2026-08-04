@@ -1,8 +1,8 @@
-import type { ActivityPlugin, AuthPlugin, BlockPlugin } from '@rpe/plugin-sdk'
+import type { ActivityPlugin, AuthPlugin, BlockPlugin, ContentModulePlugin } from '@rpe/plugin-sdk'
 
-type AnyPlugin = ActivityPlugin | AuthPlugin | BlockPlugin
+type AnyPlugin = ActivityPlugin | AuthPlugin | BlockPlugin | ContentModulePlugin
 
-export type PluginType = 'activity' | 'auth' | 'block' | 'grade_aggregation'
+export type PluginType = 'activity' | 'auth' | 'block' | 'content' | 'grade_aggregation'
 
 interface PluginEntry {
   type: PluginType
@@ -38,6 +38,10 @@ export class PluginRegistry {
     return this.listByType('activity') as ActivityPlugin[]
   }
 
+  listContentPlugins(): ContentModulePlugin[] {
+    return this.listByType('content') as ContentModulePlugin[]
+  }
+
   getActivity(id: string): ActivityPlugin | undefined {
     const entry = this.registry.get(id)
     return entry?.type === 'activity' ? (entry.plugin as ActivityPlugin) : undefined
@@ -46,5 +50,10 @@ export class PluginRegistry {
   getAuth(id: string): AuthPlugin | undefined {
     const entry = this.registry.get(id)
     return entry?.type === 'auth' ? (entry.plugin as AuthPlugin) : undefined
+  }
+
+  getContent(id: string): ContentModulePlugin | undefined {
+    const entry = this.registry.get(id)
+    return entry?.type === 'content' ? (entry.plugin as ContentModulePlugin) : undefined
   }
 }

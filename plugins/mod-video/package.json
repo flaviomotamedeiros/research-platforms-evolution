@@ -1,0 +1,15 @@
+{
+  "name": "@rpe/mod-video",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@rpe/plugin-sdk": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.0"
+  }
+}
