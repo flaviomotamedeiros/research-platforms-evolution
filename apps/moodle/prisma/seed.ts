@@ -58,11 +58,49 @@ const students: Array<{ id: string; username: string; first: string; last: strin
 const profileOf = new Map(students.map((s) => [s.id, s.profile]))
 
 // ── Courses, activities, session topics ─────────────────────────────────────
+interface UnitDef {
+  name: string
+  summary: string
+  materials: Array<{ kind: 'page' | 'link'; title: string; content: string }>
+  activityIdx: number[] // indices into activities[]
+}
+
 interface CourseDef {
   id: string; shortName: string; fullName: string; teacherId: string
   activities: Array<{ name: string; plugin: string; max: number; graded: boolean }>
   topics: string[]
   days: number[] // weekdays (1=Mon..5=Fri)
+  units?: UnitDef[]
+}
+
+// Generic unit builder: distributes topics/activities into 4 named units with
+// course-flavoured page content and curated external links.
+function makeUnits(
+  courseName: string,
+  unitNames: Array<[string, string]>,
+  pages: Array<[string, string]>,
+  links: Array<[string, string]>,
+  activityCount: number,
+): UnitDef[] {
+  return unitNames.map(([name, summary], u) => {
+    const materials: UnitDef['materials'] = []
+    const page = pages[u]
+    if (page) {
+      materials.push({
+        kind: 'page',
+        title: page[0],
+        content: `<h3>${page[0]}</h3><p>${page[1]}</p><p>Material de apoio da disciplina <strong>${courseName}</strong>. Leia antes da aula e traga suas dúvidas para o fórum.</p>`,
+      })
+    }
+    const link = links[u]
+    if (link) materials.push({ kind: 'link', title: link[0], content: link[1] })
+    // spread activities across the first units
+    const activityIdx: number[] = []
+    for (let i = 0; i < activityCount; i++) {
+      if (i % unitNames.length === u) activityIdx.push(i)
+    }
+    return { name, summary, materials, activityIdx }
+  })
 }
 
 const courses: CourseDef[] = [
@@ -156,6 +194,114 @@ const courses: CourseDef[] = [
   },
 ]
 
+// ── Units (sections + materials) per course ─────────────────────────────────
+const UNIT_DEFS: Record<string, { names: Array<[string, string]>; pages: Array<[string, string]>; links: Array<[string, string]> }> = {
+  'c-poo': {
+    names: [
+      ['Unidade 1 — Fundamentos de OO', 'Classes, objetos, atributos, métodos e encapsulamento.'],
+      ['Unidade 2 — Herança e Polimorfismo', 'Reuso, sobrescrita, classes abstratas e interfaces.'],
+      ['Unidade 3 — Coleções e Exceções', 'List, Map, Streams e tratamento de erros.'],
+      ['Unidade 4 — Projeto Final', 'Padrões de projeto e API REST com Spring.'],
+    ],
+    pages: [
+      ['Aula 01 — Classes e Objetos', 'Uma classe define atributos e comportamentos; um objeto é uma instância com estado próprio. Em Java: <code>public class Aluno { private String nome; }</code>.'],
+      ['Aula 05 — Polimorfismo na prática', 'Polimorfismo permite tratar objetos de subclasses pelo tipo da superclasse, escolhendo o método em tempo de execução.'],
+      ['Aula 09 — Streams e lambdas', 'A API de Streams processa coleções de forma declarativa: <code>alunos.stream().filter(a -> a.getMedia() >= 7).toList()</code>.'],
+      ['Guia do Projeto Final', 'Especificação da API REST: endpoints de cadastro, autenticação JWT e persistência com JPA. Entrega em duplas.'],
+    ],
+    links: [
+      ['Documentação oficial do Java', 'https://docs.oracle.com/en/java/'],
+      ['Baeldung — Inheritance', 'https://www.baeldung.com/java-inheritance'],
+      ['Java Collections — tutorial', 'https://docs.oracle.com/javase/tutorial/collections/'],
+      ['Spring Boot — guia inicial', 'https://spring.io/guides/gs/spring-boot'],
+    ],
+  },
+  'c-bd': {
+    names: [
+      ['Unidade 1 — Modelagem de Dados', 'Modelo ER, cardinalidade e mapeamento relacional.'],
+      ['Unidade 2 — SQL', 'DDL, consultas, junções e agregações.'],
+      ['Unidade 3 — Normalização', '1FN a BCNF e qualidade de esquema.'],
+      ['Unidade 4 — Programação no SGBD', 'Transações, procedures e triggers.'],
+    ],
+    pages: [
+      ['Aula 02 — Entidades e relacionamentos', 'Entidades representam objetos do domínio; relacionamentos expressam associações com cardinalidades 1:1, 1:N e N:M.'],
+      ['Aula 08 — JOINs', 'INNER JOIN retorna apenas correspondências; LEFT JOIN preserva a tabela da esquerda: fundamental para relatórios.'],
+      ['Aula 12 — 3FN na prática', 'Uma relação está na 3FN quando não há dependências transitivas de atributos não-chave.'],
+      ['Aula 15 — Transações e ACID', 'Atomicidade, consistência, isolamento e durabilidade garantem integridade sob concorrência.'],
+    ],
+    links: [
+      ['PostgreSQL — documentação', 'https://www.postgresql.org/docs/'],
+      ['SQLBolt — exercícios interativos', 'https://sqlbolt.com/'],
+      ['Normalização — guia visual', 'https://www.guru99.com/database-normalization.html'],
+      ['Use The Index, Luke', 'https://use-the-index-luke.com/'],
+    ],
+  },
+  'c-redes': {
+    names: [
+      ['Unidade 1 — Fundamentos', 'Modelos OSI e TCP/IP, história das redes.'],
+      ['Unidade 2 — Endereçamento', 'IPv4, sub-redes, CIDR e IPv6.'],
+      ['Unidade 3 — Infraestrutura', 'Cabeamento, switches, roteadores e VLANs.'],
+      ['Unidade 4 — Segurança e Gerência', 'Firewall, VPN e monitoramento SNMP.'],
+    ],
+    pages: [
+      ['Aula 02 — Modelo OSI', 'Sete camadas, da física à aplicação. Cada camada oferece serviços à camada superior e usa os da inferior.'],
+      ['Aula 05 — Sub-redes e CIDR', 'CIDR substitui classes fixas por prefixos flexíveis: /26 divide uma /24 em quatro sub-redes de 62 hosts.'],
+      ['Aula 11 — VLANs', 'VLANs segmentam broadcast domains no mesmo switch físico, isolando tráfego por função ou setor.'],
+      ['Aula 15 — Firewalls e ACLs', 'Regras stateful filtram por estado de conexão; ACLs em roteadores filtram por endereço e porta.'],
+    ],
+    links: [
+      ['Cisco Networking Academy', 'https://www.netacad.com/'],
+      ['Calculadora de sub-redes', 'https://www.subnet-calculator.com/'],
+      ['Packet Tracer — download', 'https://www.netacad.com/courses/packet-tracer'],
+      ['Wireshark — primeiros passos', 'https://www.wireshark.org/docs/'],
+    ],
+  },
+  'c-web': {
+    names: [
+      ['Unidade 1 — Fundamentos Web', 'HTML semântico, CSS e responsividade.'],
+      ['Unidade 2 — JavaScript', 'DOM, eventos, fetch e ES6+.'],
+      ['Unidade 3 — React', 'Componentes, estado, hooks e roteamento.'],
+      ['Unidade 4 — Full-stack', 'Autenticação, deploy e acessibilidade.'],
+    ],
+    pages: [
+      ['Aula 03 — Box model', 'Todo elemento é uma caixa: content, padding, border e margin. <code>box-sizing: border-box</code> simplifica o cálculo.'],
+      ['Aula 07 — DOM e eventos', 'O DOM é a árvore viva da página; eventos propagam em captura e bolha — <code>addEventListener</code> controla as fases.'],
+      ['Aula 11 — Hooks', 'useState guarda estado entre renders; useEffect sincroniza efeitos com o ciclo de vida do componente.'],
+      ['Aula 16 — Deploy', 'Build de produção, variáveis de ambiente e hospedagem em plataformas de edge/serverless.'],
+    ],
+    links: [
+      ['MDN Web Docs', 'https://developer.mozilla.org/'],
+      ['JavaScript.info', 'https://javascript.info/'],
+      ['React — documentação', 'https://react.dev/'],
+      ['web.dev — performance', 'https://web.dev/'],
+    ],
+  },
+  'c-so': {
+    names: [
+      ['Unidade 1 — Processos', 'Estrutura do SO, processos e threads.'],
+      ['Unidade 2 — Escalonamento e Sincronização', 'Algoritmos de escalonamento, semáforos e deadlocks.'],
+      ['Unidade 3 — Memória e Arquivos', 'Memória virtual e sistemas de arquivos.'],
+      ['Unidade 4 — Virtualização', 'VMs, contêineres e automação com shell.'],
+    ],
+    pages: [
+      ['Aula 03 — Processos', 'Um processo é um programa em execução: código, dados, pilha e contexto. O PCB guarda o estado para troca de contexto.'],
+      ['Aula 05 — Escalonamento', 'Round-robin alterna processos por quantum; SJF minimiza tempo médio de espera, mas exige previsão de burst.'],
+      ['Aula 09 — Memória virtual', 'Paginação por demanda traz páginas sob falta; LRU aproxima o ótimo de Belady na substituição.'],
+      ['Aula 13 — Contêineres', 'Namespaces isolam visão do sistema; cgroups limitam recursos — a base do Docker.'],
+    ],
+    links: [
+      ['OSTEP — livro aberto', 'https://pages.cs.wisc.edu/~remzi/OSTEP/'],
+      ['Linux man pages', 'https://man7.org/linux/man-pages/'],
+      ['Bash Guide', 'https://mywiki.wooledge.org/BashGuide'],
+      ['Docker — get started', 'https://docs.docker.com/get-started/'],
+    ],
+  },
+}
+for (const c of courses) {
+  const def = UNIT_DEFS[c.id]
+  c.units = makeUnits(c.fullName, def.names, def.pages, def.links, c.activities.length)
+}
+
 // Enrolment map: pedro in 4 courses; others distributed
 const enrolmentPlan: Record<string, string[]> = {
   'c-poo':   ['s-pedro', 's-maria', 's-lucas', 's-aline', 's-bruno', 's-carla', 's-daniel', 's-elisa', 's-felipe', 's-gabriela', 's-henrique', 's-isabela'],
@@ -212,6 +358,8 @@ async function main() {
   await prisma.grade.deleteMany()
   await prisma.submission.deleteMany()
   await prisma.activity.deleteMany()
+  await prisma.material.deleteMany()
+  await prisma.courseSection.deleteMany()
   await prisma.enrollment.deleteMany()
   await prisma.user.deleteMany()
   await prisma.course.deleteMany()
@@ -251,14 +399,42 @@ async function main() {
     data: enrolments.map((e) => ({ ...e, status: 'active', enrolledAt: new Date(2026, 1, 10) })),
   })
 
+  // Sections + materials
+  const sectionRowsDb: any[] = []
+  const materialRows: any[] = []
+  const sectionOfActivity = new Map<string, string>() // `${courseId}:${activityIdx}` → sectionId
+  for (const c of courses) {
+    c.units!.forEach((u, ui) => {
+      const secId = `sec-${c.id}-${ui}`
+      sectionRowsDb.push({ id: secId, courseId: c.id, order: ui, name: u.name, summary: u.summary })
+      u.materials.forEach((m, mi) => {
+        materialRows.push({
+          id: `mat-${secId}-${mi}`, courseId: c.id, sectionId: secId,
+          kind: m.kind, title: m.title, content: m.content,
+        })
+      })
+      for (const ai of u.activityIdx) sectionOfActivity.set(`${c.id}:${ai}`, secId)
+    })
+  }
+  await prisma.courseSection.createMany({ data: sectionRowsDb })
+  await prisma.material.createMany({ data: materialRows })
+
   // Activities + grades
   const activityRows: any[] = []
   const gradeRows: any[] = []
   for (const c of courses) {
     c.activities.forEach((a, i) => {
       const actId = `a-${c.id}-${i}`
+      // due dates: spaced through the semester, ~3 weeks apart per activity
+      const due = new Date(2026, 2, 23 + i * 20)
       activityRows.push({
-        id: actId, courseId: c.id, sectionId: `sec-${i + 1}`, pluginId: a.plugin, name: a.name, visible: true,
+        id: actId, courseId: c.id,
+        sectionId: sectionOfActivity.get(`${c.id}:${i}`) ?? `sec-${c.id}-0`,
+        pluginId: a.plugin, name: a.name, visible: true,
+        description: a.graded
+          ? 'Entrega individual pelo ambiente. Consulte os critérios de avaliação no material da unidade.'
+          : 'Atividade em andamento — prazo ao final da unidade.',
+        dueDate: due,
       })
       if (!a.graded) return
       for (const sid of enrolmentPlan[c.id]) {

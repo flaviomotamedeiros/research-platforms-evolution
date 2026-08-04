@@ -7,7 +7,10 @@ import { AppShell } from '@/components/shell'
 import { StatTile, Bar, Ring, StatusChip, Skeleton } from '@/components/ui'
 
 interface Me { name: string; role: string }
-interface Course { id: string; fullName: string; shortName: string; role: string; teacher: string; activityCount: number }
+interface Course {
+  id: string; fullName: string; shortName: string; role: string; teacher: string
+  activityCount: number; studentCount: number; toGrade: number
+}
 interface Report {
   items: Array<{ courseId: string; percentage: number | null }>
   stats: { total: number; graded: number; pending: number; average: number | null }
@@ -27,6 +30,7 @@ export default function DashboardPage() {
     api<AttRow[]>('/me/attendance').then(setAttendance).catch(() => {})
   }, [])
 
+  const isTeacher = me?.role === 'teacher'
   const attByCourse = new Map((attendance ?? []).map((a) => [a.courseId, a]))
   const nonCompliant = (attendance ?? []).filter((a) => !a.compliant)
   const avgAttendance =
@@ -40,6 +44,9 @@ export default function DashboardPage() {
     return Math.round(items.reduce((s, i) => s + (i.percentage ?? 0), 0) / items.length)
   }
 
+  const totalStudents = (courses ?? []).reduce((s, c) => s + c.studentCount, 0)
+  const totalToGrade = (courses ?? []).reduce((s, c) => s + c.toGrade, 0)
+
   const firstName = me?.name.split(' ')[0]
   const today = new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' })
 
@@ -52,8 +59,8 @@ export default function DashboardPage() {
         </h1>
       </div>
 
-      {/* Attendance alert — status color + icon + text, never color alone */}
-      {nonCompliant.length > 0 && (
+      {/* Student: attendance alert */}
+      {!isTeacher && nonCompliant.length > 0 && (
         <div className="mb-6 flex items-start gap-3 rounded-2xl border border-status-critical/30 bg-status-critical/5 p-4">
           <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-status-critical text-xs font-bold text-white">
             !
@@ -68,15 +75,37 @@ export default function DashboardPage() {
         </div>
       )}
 
+      {/* Teacher: pending grading alert */}
+      {isTeacher && courses && totalToGrade > 0 && (
+        <div className="mb-6 flex items-start gap-3 rounded-2xl border border-status-warning/40 bg-status-warning/10 p-4">
+          <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-status-warning text-xs font-bold text-white">
+            !
+          </span>
+          <div>
+            <p className="text-sm font-semibold">Você tem {totalToGrade} correções pendentes</p>
+            <p className="text-sm text-ink-2">Abra um curso e use “Lançar notas” na atividade correspondente.</p>
+          </div>
+        </div>
+      )}
+
       {/* KPI row */}
       <div className="mb-8 grid grid-cols-2 gap-4 lg:grid-cols-4">
         {courses && report && attendance ? (
-          <>
-            <StatTile label="Cursos" value={courses.length} hint="matrículas ativas" />
-            <StatTile label="Média geral" value={report.stats.average !== null ? `${report.stats.average}%` : '—'} accent hint={`${report.stats.graded} atividades corrigidas`} />
-            <StatTile label="Frequência média" value={avgAttendance !== null ? `${avgAttendance}%` : '—'} hint="mínimo legal: 75%" />
-            <StatTile label="Pendências" value={report.stats.pending} hint="atividades sem nota" />
-          </>
+          isTeacher ? (
+            <>
+              <StatTile label="Cursos" value={courses.length} hint="que você leciona" />
+              <StatTile label="Alunos" value={totalStudents} hint="matriculados nos seus cursos" />
+              <StatTile label="Atividades" value={courses.reduce((s, c) => s + c.activityCount, 0)} />
+              <StatTile label="A corrigir" value={totalToGrade} accent hint="submissões sem nota" />
+            </>
+          ) : (
+            <>
+              <StatTile label="Cursos" value={courses.length} hint="matrículas ativas" />
+              <StatTile label="Média geral" value={report.stats.average !== null ? `${report.stats.average}%` : '—'} accent hint={`${report.stats.graded} atividades corrigidas`} />
+              <StatTile label="Frequência média" value={avgAttendance !== null ? `${avgAttendance}%` : '—'} hint="mínimo legal: 75%" />
+              <StatTile label="Pendências" value={report.stats.pending} hint="atividades sem nota" />
+            </>
+          )
         ) : (
           Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-28" />)
         )}
@@ -85,26 +114,35 @@ export default function DashboardPage() {
       {/* Course cards */}
       <div className="mb-3 flex items-baseline justify-between">
         <h2 className="text-lg font-bold">Meus cursos</h2>
-        <Link href="/grades" className="text-sm font-medium text-brand hover:underline">
-          Ver todas as notas →
-        </Link>
+        {!isTeacher && (
+          <Link href="/grades" className="text-sm font-medium text-brand hover:underline">
+            Ver todas as notas →
+          </Link>
+        )}
       </div>
       <div className="grid gap-4 md:grid-cols-2">
         {courses ? (
           courses.map((c) => {
             const att = attByCourse.get(c.id)
             const avg = courseAvg(c.id)
+            const student = c.role === 'student'
             return (
-              <div key={c.id} className="group rounded-2xl bg-surface-1 p-5 shadow-card transition-shadow hover:shadow-cardHover">
+              <Link
+                key={c.id}
+                href={`/courses/${c.id}`}
+                className="group block rounded-2xl bg-surface-1 p-5 shadow-card transition-all hover:-translate-y-0.5 hover:shadow-cardHover"
+              >
                 <div className="flex items-start justify-between gap-4">
                   <div className="min-w-0">
                     <p className="text-xs font-semibold uppercase tracking-wide text-ink-3">{c.shortName}</p>
-                    <h3 className="truncate text-base font-bold">{c.fullName}</h3>
+                    <h3 className="truncate text-base font-bold group-hover:text-brand">{c.fullName}</h3>
                     <p className="mt-0.5 text-sm text-ink-3">
-                      {c.role === 'teacher' ? 'Você leciona' : c.teacher} · {c.activityCount} atividades
+                      {student
+                        ? `${c.teacher} · ${c.activityCount} atividades`
+                        : `${c.studentCount} alunos · ${c.activityCount} atividades`}
                     </p>
                   </div>
-                  {att && c.role === 'student' && (
+                  {att && student && (
                     <div className="shrink-0 text-center">
                       <Ring pct={att.rate} color={att.compliant ? 'var(--series-1)' : 'var(--status-critical)'} />
                       <p className="mt-1 text-[10px] font-medium uppercase tracking-wide text-ink-3">Frequência</p>
@@ -112,7 +150,7 @@ export default function DashboardPage() {
                   )}
                 </div>
 
-                {c.role === 'student' && avg !== null && (
+                {student && avg !== null && (
                   <div className="mt-4">
                     <div className="mb-1 flex justify-between text-xs">
                       <span className="text-ink-3">Média no curso</span>
@@ -123,23 +161,26 @@ export default function DashboardPage() {
                 )}
 
                 <div className="mt-4 flex items-center justify-between">
-                  {att && c.role === 'student' ? (
+                  {student && att ? (
                     att.compliant ? (
                       <StatusChip kind="good" label="Frequência regular" />
                     ) : (
                       <StatusChip kind="critical" label={`${att.absent} faltas — abaixo de 75%`} />
                     )
-                  ) : <span />}
-                  {c.role === 'teacher' && (
-                    <Link
-                      href={`/courses/${c.id}/attendance`}
-                      className="text-sm font-medium text-brand hover:underline"
-                    >
-                      Diário de frequência →
-                    </Link>
+                  ) : !student ? (
+                    c.toGrade > 0 ? (
+                      <StatusChip kind="warning" label={`${c.toGrade} a corrigir`} />
+                    ) : (
+                      <StatusChip kind="good" label="Correções em dia" />
+                    )
+                  ) : (
+                    <span />
                   )}
+                  <span className="text-sm font-medium text-brand opacity-0 transition-opacity group-hover:opacity-100">
+                    Abrir curso →
+                  </span>
                 </div>
-              </div>
+              </Link>
             )
           })
         ) : (

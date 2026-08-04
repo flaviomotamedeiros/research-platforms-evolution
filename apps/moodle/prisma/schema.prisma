@@ -55,13 +55,36 @@ model Enrollment {
   @@map("enrollments")
 }
 
-model Activity {
-  id        String  @id
+model CourseSection {
+  id       String @id
+  courseId String
+  order    Int
+  name     String
+  summary  String
+
+  @@map("course_sections")
+}
+
+model Material {
+  id        String @id
   courseId  String
   sectionId String
-  pluginId  String
-  name      String
-  visible   Boolean @default(true)
+  kind      String // page | link
+  title     String
+  content   String // HTML body for pages, URL for links
+
+  @@map("materials")
+}
+
+model Activity {
+  id          String    @id
+  courseId    String
+  sectionId   String
+  pluginId    String
+  name        String
+  description String    @default("")
+  dueDate     DateTime?
+  visible     Boolean   @default(true)
 
   @@map("activities")
 }
