@@ -28,7 +28,7 @@ const DEMO_USERS = [
 
 const ROLE_TAG = {
   student: { label: 'STUDENT', className: 'bg-brand-light text-brand-dark' },
-  teacher: { label: 'TEACHER', className: 'bg-series-3/15 text-[#0d7a55]' },
+  teacher: { label: 'TEACHER', className: 'bg-teal-light text-teal-dark' },
 }
 
 export default function LoginPage() {
@@ -127,7 +127,7 @@ export default function LoginPage() {
                   <span
                     className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl text-sm font-bold ${
                       u.role === 'teacher'
-                        ? 'bg-series-3/15 text-[#0d7a55]'
+                        ? 'bg-teal-light text-teal-dark'
                         : 'bg-brand-light text-brand-dark'
                     }`}
                   >
@@ -140,7 +140,7 @@ export default function LoginPage() {
                         {tag.label}
                       </span>
                       {u.flag && (
-                        <span className="rounded-md bg-status-critical/10 px-1.5 py-0.5 text-[10px] font-extrabold tracking-wider text-status-critical">
+                        <span className="rounded-md bg-danger-light px-1.5 py-0.5 text-[10px] font-extrabold tracking-wider text-status-critical">
                           AT RISK
                         </span>
                       )}

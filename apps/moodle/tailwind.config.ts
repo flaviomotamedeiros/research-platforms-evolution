@@ -16,6 +16,8 @@ const config: Config = {
         },
         track: 'var(--track)',
         brand: { DEFAULT: '#2a78d6', dark: '#1e5aa6', light: '#eaf2fc' },
+        teal: { DEFAULT: '#1baf7a', dark: '#0d7a55', light: '#e2f4ec' },
+        danger: { light: '#fbe6e6' },
       },
       fontFamily: {
         sans: [
