@@ -9,7 +9,7 @@ interface Me { name: string; role: string; username: string }
 
 const NAV = [
   { href: '/dashboard', label: 'Dashboard' },
-  { href: '/grades', label: 'Notas e feedback' },
+  { href: '/grades', label: 'Grades & feedback' },
 ]
 
 export function AppShell({ children }: { children: React.ReactNode }) {
@@ -72,7 +72,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               onClick={logout}
               className="rounded-lg border border-black/10 px-3 py-1.5 text-sm font-medium text-ink-2 transition-colors hover:bg-surface-0 hover:text-ink-1"
             >
-              Sair
+              Sign out
             </button>
           </div>
         </div>

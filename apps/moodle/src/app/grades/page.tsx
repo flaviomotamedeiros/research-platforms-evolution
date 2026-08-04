@@ -36,9 +36,9 @@ export default function GradesPage() {
   return (
     <AppShell>
       <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight">Notas e feedback</h1>
+        <h1 className="text-3xl font-bold tracking-tight">Grades & feedback</h1>
         <p className="mt-1 text-sm text-ink-3">
-          Visão consolidada de todas as suas atividades — o contrato de leitura{' '}
+          A consolidated view of every activity — the read contract{' '}
           <code className="rounded bg-surface-1 px-1.5 py-0.5 text-xs">report/myfeedback</code>.
         </p>
       </div>
@@ -46,10 +46,10 @@ export default function GradesPage() {
       <div className="mb-8 grid grid-cols-2 gap-4 lg:grid-cols-4">
         {report ? (
           <>
-            <StatTile label="Atividades" value={report.stats.total} />
-            <StatTile label="Corrigidas" value={report.stats.graded} />
-            <StatTile label="Pendentes" value={report.stats.pending} />
-            <StatTile label="Média geral" value={report.stats.average !== null ? `${report.stats.average}%` : '—'} accent />
+            <StatTile label="Activities" value={report.stats.total} />
+            <StatTile label="Graded" value={report.stats.graded} />
+            <StatTile label="Pending" value={report.stats.pending} />
+            <StatTile label="Overall average" value={report.stats.average !== null ? `${report.stats.average}%` : '—'} accent />
           </>
         ) : (
           Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-24" />)
@@ -69,7 +69,7 @@ export default function GradesPage() {
                   <h2 className="text-base font-bold">{courseName}</h2>
                   {avg !== null && (
                     <span className="text-sm text-ink-2">
-                      média <span className="font-bold tabular-nums text-ink-1">{avg}%</span>
+                      average <span className="font-bold tabular-nums text-ink-1">{avg}%</span>
                     </span>
                   )}
                 </header>
@@ -83,7 +83,7 @@ export default function GradesPage() {
                             “{it.feedback}”
                           </p>
                         ) : (
-                          <p className="mt-1 text-sm text-ink-3">Aguardando correção</p>
+                          <p className="mt-1 text-sm text-ink-3">Awaiting grading</p>
                         )}
                       </div>
                       <div>
@@ -99,7 +99,7 @@ export default function GradesPage() {
                           </>
                         ) : (
                           <span className="inline-block rounded-full bg-surface-0 px-2.5 py-1 text-xs font-medium text-ink-3">
-                            Sem nota
+                            Not graded
                           </span>
                         )}
                       </div>

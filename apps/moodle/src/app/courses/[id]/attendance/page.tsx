@@ -39,19 +39,19 @@ export default function CourseAttendancePage() {
           {course ? course.fullName : <Skeleton className="h-9 w-96" />}
         </h1>
         <p className="mt-1 text-sm text-ink-3">
-          Diário de frequência — o contrato de escrita{' '}
-          <code className="rounded bg-surface-1 px-1.5 py-0.5 text-xs">mod/attendance</code>. Mínimo legal:
-          75% (LDB art. 24 VI).
+          Attendance ledger — the write contract{' '}
+          <code className="rounded bg-surface-1 px-1.5 py-0.5 text-xs">mod/attendance</code>. Legal minimum:
+          75% (Brazilian education law, LDB art. 24 VI).
         </p>
       </div>
 
       <div className="mb-8 grid grid-cols-2 gap-4 lg:grid-cols-4">
         {summary ? (
           <>
-            <StatTile label="Aulas realizadas" value={summary.sessions} />
-            <StatTile label="Frequência média" value={avgRate !== null ? `${avgRate}%` : '—'} accent />
-            <StatTile label="Regulares" value={compliant} hint="≥ 75% de presença" />
-            <StatTile label="Em risco" value={atRisk} hint="abaixo do mínimo legal" />
+            <StatTile label="Classes held" value={summary.sessions} />
+            <StatTile label="Average attendance" value={avgRate !== null ? `${avgRate}%` : '—'} accent />
+            <StatTile label="Compliant" value={compliant} hint="≥ 75% attendance" />
+            <StatTile label="At risk" value={atRisk} hint="below the legal minimum" />
           </>
         ) : (
           Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-24" />)
@@ -60,8 +60,8 @@ export default function CourseAttendancePage() {
 
       <section className="overflow-hidden rounded-2xl bg-surface-1 shadow-card">
         <header className="border-b border-black/5 px-6 py-4">
-          <h2 className="text-base font-bold">Alunos ({rows.length})</h2>
-          <p className="text-xs text-ink-3">Ordenados por taxa de presença — os casos críticos primeiro.</p>
+          <h2 className="text-base font-bold">Students ({rows.length})</h2>
+          <p className="text-xs text-ink-3">Sorted by attendance rate — critical cases first.</p>
         </header>
         {summary ? (
           <ul className="divide-y divide-black/5">
@@ -81,9 +81,9 @@ export default function CourseAttendancePage() {
                 </div>
                 <div className="justify-self-end">
                   {r.compliant ? (
-                    <StatusChip kind="good" label="Regular" />
+                    <StatusChip kind="good" label="Compliant" />
                   ) : (
-                    <StatusChip kind="critical" label="Abaixo de 75%" />
+                    <StatusChip kind="critical" label="Below 75%" />
                   )}
                 </div>
               </li>

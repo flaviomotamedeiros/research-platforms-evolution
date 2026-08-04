@@ -48,14 +48,14 @@ export default function DashboardPage() {
   const totalToGrade = (courses ?? []).reduce((s, c) => s + c.toGrade, 0)
 
   const firstName = me?.name.split(' ')[0]
-  const today = new Date().toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long' })
+  const today = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })
 
   return (
     <AppShell>
       <div className="mb-8">
         <p className="text-sm capitalize text-ink-3">{today}</p>
         <h1 className="text-3xl font-bold tracking-tight">
-          {firstName ? `Olá, ${firstName}` : <Skeleton className="h-9 w-48" />}
+          {firstName ? `Hello, ${firstName}` : <Skeleton className="h-9 w-48" />}
         </h1>
       </div>
 
@@ -66,10 +66,10 @@ export default function DashboardPage() {
             !
           </span>
           <div>
-            <p className="text-sm font-semibold">Frequência abaixo do mínimo legal (75%)</p>
+            <p className="text-sm font-semibold">Attendance below the 75% legal minimum</p>
             <p className="text-sm text-ink-2">
-              {nonCompliant.length === 1 ? 'Um curso está' : `${nonCompliant.length} cursos estão`} abaixo do limite
-              da LDB art. 24 VI. Procure a coordenação para regularizar.
+              {nonCompliant.length === 1 ? 'One course is' : `${nonCompliant.length} courses are`} below the minimum
+              required by the Brazilian education law (LDB, art. 24 VI). Contact your programme coordinator.
             </p>
           </div>
         </div>
@@ -82,8 +82,8 @@ export default function DashboardPage() {
             !
           </span>
           <div>
-            <p className="text-sm font-semibold">Você tem {totalToGrade} correções pendentes</p>
-            <p className="text-sm text-ink-2">Abra um curso e use “Lançar notas” na atividade correspondente.</p>
+            <p className="text-sm font-semibold">You have {totalToGrade} submissions to grade</p>
+            <p className="text-sm text-ink-2">Open a course and use “Enter grades” on the corresponding activity.</p>
           </div>
         </div>
       )}
@@ -93,17 +93,17 @@ export default function DashboardPage() {
         {courses && report && attendance ? (
           isTeacher ? (
             <>
-              <StatTile label="Cursos" value={courses.length} hint="que você leciona" />
-              <StatTile label="Alunos" value={totalStudents} hint="matriculados nos seus cursos" />
-              <StatTile label="Atividades" value={courses.reduce((s, c) => s + c.activityCount, 0)} />
-              <StatTile label="A corrigir" value={totalToGrade} accent hint="submissões sem nota" />
+              <StatTile label="Courses" value={courses.length} hint="you teach" />
+              <StatTile label="Students" value={totalStudents} hint="enrolled in your courses" />
+              <StatTile label="Activities" value={courses.reduce((s, c) => s + c.activityCount, 0)} />
+              <StatTile label="To grade" value={totalToGrade} accent hint="ungraded submissions" />
             </>
           ) : (
             <>
-              <StatTile label="Cursos" value={courses.length} hint="matrículas ativas" />
-              <StatTile label="Média geral" value={report.stats.average !== null ? `${report.stats.average}%` : '—'} accent hint={`${report.stats.graded} atividades corrigidas`} />
-              <StatTile label="Frequência média" value={avgAttendance !== null ? `${avgAttendance}%` : '—'} hint="mínimo legal: 75%" />
-              <StatTile label="Pendências" value={report.stats.pending} hint="atividades sem nota" />
+              <StatTile label="Courses" value={courses.length} hint="active enrolments" />
+              <StatTile label="Overall average" value={report.stats.average !== null ? `${report.stats.average}%` : '—'} accent hint={`${report.stats.graded} graded activities`} />
+              <StatTile label="Attendance rate" value={avgAttendance !== null ? `${avgAttendance}%` : '—'} hint="legal minimum: 75%" />
+              <StatTile label="Pending" value={report.stats.pending} hint="activities not graded yet" />
             </>
           )
         ) : (
@@ -113,10 +113,10 @@ export default function DashboardPage() {
 
       {/* Course cards */}
       <div className="mb-3 flex items-baseline justify-between">
-        <h2 className="text-lg font-bold">Meus cursos</h2>
+        <h2 className="text-lg font-bold">My courses</h2>
         {!isTeacher && (
           <Link href="/grades" className="text-sm font-medium text-brand hover:underline">
-            Ver todas as notas →
+            View all grades →
           </Link>
         )}
       </div>
@@ -138,14 +138,14 @@ export default function DashboardPage() {
                     <h3 className="truncate text-base font-bold group-hover:text-brand">{c.fullName}</h3>
                     <p className="mt-0.5 text-sm text-ink-3">
                       {student
-                        ? `${c.teacher} · ${c.activityCount} atividades`
-                        : `${c.studentCount} alunos · ${c.activityCount} atividades`}
+                        ? `${c.teacher} · ${c.activityCount} activities`
+                        : `${c.studentCount} students · ${c.activityCount} activities`}
                     </p>
                   </div>
                   {att && student && (
                     <div className="shrink-0 text-center">
                       <Ring pct={att.rate} color={att.compliant ? 'var(--series-1)' : 'var(--status-critical)'} />
-                      <p className="mt-1 text-[10px] font-medium uppercase tracking-wide text-ink-3">Frequência</p>
+                      <p className="mt-1 text-[10px] font-medium uppercase tracking-wide text-ink-3">Attendance</p>
                     </div>
                   )}
                 </div>
@@ -153,7 +153,7 @@ export default function DashboardPage() {
                 {student && avg !== null && (
                   <div className="mt-4">
                     <div className="mb-1 flex justify-between text-xs">
-                      <span className="text-ink-3">Média no curso</span>
+                      <span className="text-ink-3">Course average</span>
                       <span className="font-semibold tabular-nums">{avg}%</span>
                     </div>
                     <Bar pct={avg} />
@@ -163,21 +163,21 @@ export default function DashboardPage() {
                 <div className="mt-4 flex items-center justify-between">
                   {student && att ? (
                     att.compliant ? (
-                      <StatusChip kind="good" label="Frequência regular" />
+                      <StatusChip kind="good" label="Attendance OK" />
                     ) : (
-                      <StatusChip kind="critical" label={`${att.absent} faltas — abaixo de 75%`} />
+                      <StatusChip kind="critical" label={`${att.absent} absences — below 75%`} />
                     )
                   ) : !student ? (
                     c.toGrade > 0 ? (
-                      <StatusChip kind="warning" label={`${c.toGrade} a corrigir`} />
+                      <StatusChip kind="warning" label={`${c.toGrade} to grade`} />
                     ) : (
-                      <StatusChip kind="good" label="Correções em dia" />
+                      <StatusChip kind="good" label="Grading up to date" />
                     )
                   ) : (
                     <span />
                   )}
                   <span className="text-sm font-medium text-brand opacity-0 transition-opacity group-hover:opacity-100">
-                    Abrir curso →
+                    Open course →
                   </span>
                 </div>
               </Link>

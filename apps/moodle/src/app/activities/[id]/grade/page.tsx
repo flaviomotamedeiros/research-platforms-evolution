@@ -58,11 +58,11 @@ export default function GradeEntryPage() {
         {view ? (
           <>
             <Link href={`/courses/${view.activity.courseId}`} className="text-sm font-medium text-brand hover:underline">
-              ← Voltar ao curso
+              ← Back to course
             </Link>
             <h1 className="mt-2 text-3xl font-bold tracking-tight">{view.activity.name}</h1>
             <p className="mt-1 text-sm text-ink-3">
-              Lançamento de notas e feedback — contrato de escrita do módulo de avaliação.
+              Grade and feedback entry — the assessment module's write contract.
             </p>
           </>
         ) : (
@@ -72,16 +72,16 @@ export default function GradeEntryPage() {
 
       {error && (
         <div className="mb-6 rounded-2xl border border-status-critical/30 bg-status-critical/5 p-4 text-sm">
-          {error} — apenas o professor do curso pode lançar notas.
+          {error} — only the course teacher can enter grades.
         </div>
       )}
 
       {view && (
         <>
           <div className="mb-8 grid grid-cols-2 gap-4 lg:grid-cols-3">
-            <StatTile label="Alunos" value={view.rows.length} />
-            <StatTile label="Corrigidas" value={graded} accent />
-            <StatTile label="Pendentes" value={view.rows.length - graded} />
+            <StatTile label="Students" value={view.rows.length} />
+            <StatTile label="Graded" value={graded} accent />
+            <StatTile label="Pending" value={view.rows.length - graded} />
           </div>
 
           <section className="overflow-hidden rounded-2xl bg-surface-1 shadow-card">
@@ -105,7 +105,7 @@ export default function GradeEntryPage() {
                     </div>
                     <input
                       type="text"
-                      placeholder="Feedback para o aluno…"
+                      placeholder="Feedback for the student…"
                       value={edit.feedback}
                       onChange={(e) => setEdits((s) => ({ ...s, [r.userId]: { ...edit, feedback: e.target.value } }))}
                       className="w-full rounded-lg border border-black/10 bg-surface-0 px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-brand/40"
@@ -119,7 +119,7 @@ export default function GradeEntryPage() {
                           : 'bg-brand text-white hover:bg-brand-dark disabled:opacity-60'
                       }`}
                     >
-                      {saved[r.userId] ? '✓ Salvo' : saving === r.userId ? 'Salvando…' : 'Salvar'}
+                      {saved[r.userId] ? '✓ Saved' : saving === r.userId ? 'Saving…' : 'Save'}
                     </button>
                   </li>
                 )
