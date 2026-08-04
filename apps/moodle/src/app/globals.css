@@ -4,8 +4,33 @@
 
 :root {
   color-scheme: light;
+  /* surfaces & ink */
+  --surface-0: #f6f7f9;
+  --surface-1: #fcfcfb;
+  --ink-1: #0b0b0b;
+  --ink-2: #52514e;
+  --ink-3: #8a8985;
+  /* categorical (validated): blue / orange / aqua */
+  --series-1: #2a78d6;
+  --series-2: #eb6834;
+  --series-3: #1baf7a;
+  /* status (fixed, icon+label always) */
+  --status-good: #0ca30c;
+  --status-warning: #fab219;
+  --status-serious: #ec835a;
+  --status-critical: #d03b3b;
+  /* tracks */
+  --track: #e8ecf2;
 }
 
 body {
-  @apply bg-slate-50 text-slate-900 antialiased;
+  background: var(--surface-0);
+  color: var(--ink-1);
+  -webkit-font-smoothing: antialiased;
+  font-feature-settings: 'cv11', 'ss01';
+}
+
+::selection {
+  background: #2a78d6;
+  color: #fff;
 }

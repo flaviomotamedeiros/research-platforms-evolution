@@ -1,11 +1,12 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import { api } from '@/lib/client/api'
+import { AppShell } from '@/components/shell'
+import { StatTile, Bar, Skeleton } from '@/components/ui'
 
 interface FeedbackItem {
+  courseId: string
   courseName: string
   activityName: string
   grade: number | null
@@ -18,71 +19,100 @@ interface Report {
   stats: { total: number; graded: number; pending: number; average: number | null }
 }
 
-function pctColor(p: number | null): string {
-  if (p === null) return 'text-slate-400'
-  if (p >= 70) return 'text-green-600'
-  if (p >= 50) return 'text-amber-600'
-  return 'text-red-600'
-}
-
 export default function GradesPage() {
-  const router = useRouter()
   const [report, setReport] = useState<Report | null>(null)
 
   useEffect(() => {
-    api<Report>('/me/grades')
-      .then(setReport)
-      .catch(() => router.push('/login'))
-  }, [router])
+    api<Report>('/me/grades').then(setReport).catch(() => {})
+  }, [])
 
-  if (!report) return null
+  const byCourse = new Map<string, FeedbackItem[]>()
+  for (const it of report?.items ?? []) {
+    const arr = byCourse.get(it.courseName) ?? []
+    arr.push(it)
+    byCourse.set(it.courseName, arr)
+  }
 
   return (
-    <main className="mx-auto max-w-4xl p-6">
-      <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-brand">My grades &amp; feedback</h1>
-        <Link href="/dashboard" className="text-sm text-brand hover:underline">← Dashboard</Link>
+    <AppShell>
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold tracking-tight">Notas e feedback</h1>
+        <p className="mt-1 text-sm text-ink-3">
+          Visão consolidada de todas as suas atividades — o contrato de leitura{' '}
+          <code className="rounded bg-surface-1 px-1.5 py-0.5 text-xs">report/myfeedback</code>.
+        </p>
       </div>
 
-      {/* read-contract summary — report/myfeedback */}
-      <div className="mb-6 grid grid-cols-4 gap-3">
-        {[
-          ['Activities', report.stats.total],
-          ['Graded', report.stats.graded],
-          ['Pending', report.stats.pending],
-          ['Average', report.stats.average !== null ? `${report.stats.average}%` : '—'],
-        ].map(([label, value]) => (
-          <div key={label} className="rounded-lg bg-white p-4 text-center shadow-sm">
-            <p className="text-2xl font-bold text-brand">{value}</p>
-            <p className="text-xs text-slate-500">{label}</p>
-          </div>
-        ))}
+      <div className="mb-8 grid grid-cols-2 gap-4 lg:grid-cols-4">
+        {report ? (
+          <>
+            <StatTile label="Atividades" value={report.stats.total} />
+            <StatTile label="Corrigidas" value={report.stats.graded} />
+            <StatTile label="Pendentes" value={report.stats.pending} />
+            <StatTile label="Média geral" value={report.stats.average !== null ? `${report.stats.average}%` : '—'} accent />
+          </>
+        ) : (
+          Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-24" />)
+        )}
       </div>
 
-      <div className="overflow-hidden rounded-lg bg-white shadow-sm">
-        <table className="w-full text-sm">
-          <thead className="bg-slate-100 text-left">
-            <tr>
-              <th className="p-3">Course</th>
-              <th className="p-3">Activity</th>
-              <th className="p-3">Grade</th>
-              <th className="p-3">Feedback</th>
-            </tr>
-          </thead>
-          <tbody>
-            {report.items.map((it, i) => (
-              <tr key={i} className="border-t border-slate-100">
-                <td className="p-3">{it.courseName}</td>
-                <td className="p-3">{it.activityName}</td>
-                <td className={`p-3 font-semibold ${pctColor(it.percentage)}`}>
-                  {it.grade !== null ? `${it.grade}/${it.maxGrade} (${it.percentage}%)` : '—'}
-                </td>
-                <td className="p-3 text-slate-500 italic">{it.feedback ?? '—'}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </main>
+      {report ? (
+        <div className="space-y-6">
+          {[...byCourse.entries()].map(([courseName, items]) => {
+            const graded = items.filter((i) => i.percentage !== null)
+            const avg = graded.length
+              ? Math.round(graded.reduce((s, i) => s + (i.percentage ?? 0), 0) / graded.length)
+              : null
+            return (
+              <section key={courseName} className="overflow-hidden rounded-2xl bg-surface-1 shadow-card">
+                <header className="flex items-baseline justify-between border-b border-black/5 px-6 py-4">
+                  <h2 className="text-base font-bold">{courseName}</h2>
+                  {avg !== null && (
+                    <span className="text-sm text-ink-2">
+                      média <span className="font-bold tabular-nums text-ink-1">{avg}%</span>
+                    </span>
+                  )}
+                </header>
+                <ul className="divide-y divide-black/5">
+                  {items.map((it, i) => (
+                    <li key={i} className="grid gap-3 px-6 py-4 sm:grid-cols-[1fr_220px] sm:items-center">
+                      <div className="min-w-0">
+                        <p className="text-sm font-semibold">{it.activityName}</p>
+                        {it.feedback ? (
+                          <p className="mt-1 border-l-2 border-track pl-3 text-sm italic text-ink-2">
+                            “{it.feedback}”
+                          </p>
+                        ) : (
+                          <p className="mt-1 text-sm text-ink-3">Aguardando correção</p>
+                        )}
+                      </div>
+                      <div>
+                        {it.percentage !== null ? (
+                          <>
+                            <div className="mb-1 flex justify-between text-xs">
+                              <span className="text-ink-3">
+                                {it.grade}/{it.maxGrade}
+                              </span>
+                              <span className="font-bold tabular-nums">{it.percentage}%</span>
+                            </div>
+                            <Bar pct={it.percentage} />
+                          </>
+                        ) : (
+                          <span className="inline-block rounded-full bg-surface-0 px-2.5 py-1 text-xs font-medium text-ink-3">
+                            Sem nota
+                          </span>
+                        )}
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )
+          })}
+        </div>
+      ) : (
+        <Skeleton className="h-64" />
+      )}
+    </AppShell>
   )
 }
