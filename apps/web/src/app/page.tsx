@@ -24,15 +24,15 @@ const PLATFORMS = [
     ready: true,
   },
   {
-    href: '#',
+    href: '/redmine',
     tag: 'PM',
     glyph: 'r',
-    glyphClass: 'bg-ink-3',
+    glyphClass: 'bg-rbrand',
     name: 'redmine-next',
     domain: 'Project management',
     desc: 'Projects, issues and time tracking — modernising Redmine.',
-    contracts: ['Coming soon'],
-    ready: false,
+    contracts: ['report/project (read)', 'issue update (write)', 'tracker plugins'],
+    ready: true,
   },
 ]
 

@@ -6,6 +6,7 @@ const nextConfig = {
     '@rpe/moodle-core', '@rpe/glpi-core',
     '@rpe/mod-page', '@rpe/mod-video', '@rpe/mod-url',
     '@rpe/asset-computer', '@rpe/asset-network', '@rpe/asset-printer',
+    '@rpe/redmine-core', '@rpe/tracker-bug', '@rpe/tracker-feature', '@rpe/tracker-support',
   ],
   webpack: (config) => {
     config.resolve.extensionAlias = { '.js': ['.ts', '.tsx', '.js'], ...config.resolve.extensionAlias }

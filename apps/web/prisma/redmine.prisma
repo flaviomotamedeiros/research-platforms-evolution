@@ -1,0 +1,82 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("REDMINE_DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/redmine-client"
+}
+
+// redmine-next (research-platforms-evolution) — new-system database.
+// PostgreSQL on Neon (database "redmine"). Models mirror @rpe/redmine-core
+// aggregates, plus issue_journals and time_entries (write-contract plugin).
+
+model User {
+  id           String    @id
+  username     String    @unique
+  email        String
+  firstName    String
+  lastName     String
+  passwordHash String
+  role         String    @default("reporter") // admin | manager | developer | reporter
+  deletedAt    DateTime?
+
+  @@map("users")
+}
+
+model Project {
+  id          String @id
+  name        String
+  identifier  String @unique
+  description String
+  status      String // active | closed | archived
+  leadId      String
+
+  @@map("projects")
+}
+
+model Issue {
+  id             String    @id
+  projectId      String
+  trackerPluginId String // tracker_bug | tracker_feature | tracker_support
+  subject        String
+  description    String
+  status         String // new | in_progress | resolved | feedback | closed
+  priority       String // low | normal | high | urgent
+  authorId       String
+  assigneeId     String?
+  doneRatio      Int       @default(0)
+  estimatedHours Float?
+  fields         String    @default("{}") // opaque tracker payload
+  createdAt      DateTime
+  dueDate        DateTime?
+  closedAt       DateTime?
+
+  @@map("issues")
+}
+
+// ── write contract: journal notes + time entries ────────────────────────────
+model IssueJournal {
+  id        String   @id
+  issueId   String
+  authorId  String
+  notes     String
+  // optional recorded status/progress transition
+  detail    String?  // e.g. "status: new → in_progress"
+  createdAt DateTime @default(now())
+
+  @@map("issue_journals")
+}
+
+model TimeEntry {
+  id        String   @id
+  issueId   String
+  projectId String
+  userId    String
+  hours     Float
+  comment   String
+  spentOn   DateTime
+
+  @@map("time_entries")
+}

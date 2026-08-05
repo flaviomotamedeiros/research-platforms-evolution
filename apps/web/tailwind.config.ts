@@ -13,6 +13,7 @@ const config: Config = {
         // opacity modifiers (ring/border) work correctly.
         mbrand: { DEFAULT: '#2a78d6', dark: '#1e5aa6', light: '#eaf2fc' },
         gbrand: { DEFAULT: '#3d5afe', dark: '#2a3eb1', light: '#e8ebff' },
+        rbrand: { DEFAULT: '#b0413e', dark: '#8a2f2c', light: '#f7e7e6' },
         teal: { DEFAULT: '#1baf7a', dark: '#0d7a55', light: '#e2f4ec' },
         danger: { light: '#fbe6e6' },
       },

@@ -27,6 +27,7 @@ body {
 
 /* Moodle sections theme series-1 blue; GLPI theme series-1 indigo. */
 .theme-glpi { --series-1: #3d5afe; }
+.theme-redmine { --series-1: #b0413e; }
 
 ::selection { background: #3d5afe; color: #fff; }
 

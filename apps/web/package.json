@@ -5,14 +5,16 @@
   "type": "module",
   "scripts": {
     "dev": "next dev -p 3000",
-    "build": "prisma generate --schema=prisma/moodle.prisma && prisma generate --schema=prisma/glpi.prisma && next build",
+    "build": "prisma generate --schema=prisma/moodle.prisma && prisma generate --schema=prisma/glpi.prisma && prisma generate --schema=prisma/redmine.prisma && next build",
     "start": "next start -p 3000",
     "typecheck": "tsc --noEmit",
-    "db:generate": "prisma generate --schema=prisma/moodle.prisma && prisma generate --schema=prisma/glpi.prisma",
+    "db:generate": "prisma generate --schema=prisma/moodle.prisma && prisma generate --schema=prisma/glpi.prisma && prisma generate --schema=prisma/redmine.prisma",
     "db:push:moodle": "prisma db push --schema=prisma/moodle.prisma",
     "db:push:glpi": "prisma db push --schema=prisma/glpi.prisma",
     "db:seed:moodle": "tsx prisma/moodle-seed.ts",
-    "db:seed:glpi": "tsx prisma/glpi-seed.ts"
+    "db:seed:glpi": "tsx prisma/glpi-seed.ts",
+    "db:push:redmine": "prisma db push --schema=prisma/redmine.prisma",
+    "db:seed:redmine": "tsx prisma/redmine-seed.ts"
   },
   "dependencies": {
     "@rpe/domain-kit": "workspace:*",
@@ -31,7 +33,11 @@
     "next": "^14.2.15",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "zod": "^3.23.8"
+    "zod": "^3.23.8",
+    "@rpe/redmine-core": "workspace:*",
+    "@rpe/tracker-bug": "workspace:*",
+    "@rpe/tracker-feature": "workspace:*",
+    "@rpe/tracker-support": "workspace:*"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",

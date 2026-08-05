@@ -53,6 +53,18 @@ importers:
       '@rpe/plugin-sdk':
         specifier: workspace:*
         version: link:../../packages/plugin-sdk
+      '@rpe/redmine-core':
+        specifier: workspace:*
+        version: link:../../domains/redmine-core
+      '@rpe/tracker-bug':
+        specifier: workspace:*
+        version: link:../../plugins/tracker-bug
+      '@rpe/tracker-feature':
+        specifier: workspace:*
+        version: link:../../plugins/tracker-feature
+      '@rpe/tracker-support':
+        specifier: workspace:*
+        version: link:../../plugins/tracker-support
       bcryptjs:
         specifier: ^2.4.3
         version: 2.4.3
@@ -114,6 +126,19 @@ importers:
         version: 2.1.9(@types/node@26.1.2)
 
   domains/moodle-core:
+    dependencies:
+      '@rpe/domain-kit':
+        specifier: workspace:*
+        version: link:../../packages/domain-kit
+    devDependencies:
+      typescript:
+        specifier: ^5.6.0
+        version: 5.9.3
+      vitest:
+        specifier: ^2.1.0
+        version: 2.1.9(@types/node@26.1.2)
+
+  domains/redmine-core:
     dependencies:
       '@rpe/domain-kit':
         specifier: workspace:*
@@ -208,6 +233,36 @@ importers:
         version: 5.9.3
 
   plugins/mod-video:
+    dependencies:
+      '@rpe/plugin-sdk':
+        specifier: workspace:*
+        version: link:../../packages/plugin-sdk
+    devDependencies:
+      typescript:
+        specifier: ^5.6.0
+        version: 5.9.3
+
+  plugins/tracker-bug:
+    dependencies:
+      '@rpe/plugin-sdk':
+        specifier: workspace:*
+        version: link:../../packages/plugin-sdk
+    devDependencies:
+      typescript:
+        specifier: ^5.6.0
+        version: 5.9.3
+
+  plugins/tracker-feature:
+    dependencies:
+      '@rpe/plugin-sdk':
+        specifier: workspace:*
+        version: link:../../packages/plugin-sdk
+    devDependencies:
+      typescript:
+        specifier: ^5.6.0
+        version: 5.9.3
+
+  plugins/tracker-support:
     dependencies:
       '@rpe/plugin-sdk':
         specifier: workspace:*
