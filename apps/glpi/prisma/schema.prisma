@@ -1,0 +1,83 @@
+// glpi-next (research-platforms-evolution) — new-system database.
+// PostgreSQL on Neon (database "glpi"). Models mirror @rpe/glpi-core
+// aggregates, plus the ticket_followups table (write-contract plugin).
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Entity {
+  id   String @id
+  name String
+
+  @@map("entities")
+}
+
+model User {
+  id           String    @id
+  username     String    @unique
+  email        String
+  firstName    String
+  lastName     String
+  passwordHash String
+  role         String    @default("requester") // admin | technician | requester
+  entityId     String
+  deletedAt    DateTime?
+
+  @@map("users")
+}
+
+model Sla {
+  id              String @id
+  name            String
+  resolutionHours Int
+
+  @@map("slas")
+}
+
+model Asset {
+  id               String  @id
+  name             String
+  typePluginId     String // asset_computer | asset_network | asset_printer
+  status           String // in_use | spare | repair | retired
+  serialNumber     String
+  entityId         String
+  assignedToUserId String?
+  spec             String // opaque payload owned by the asset-type plugin
+
+  @@map("assets")
+}
+
+model Ticket {
+  id           String    @id
+  title        String
+  description  String
+  status       String // new | assigned | pending | solved | closed
+  priority     String // low | medium | high | critical
+  requesterId  String
+  technicianId String?
+  assetId      String?
+  slaId        String
+  entityId     String
+  openedAt     DateTime
+  dueAt        DateTime
+  solvedAt     DateTime?
+
+  @@map("tickets")
+}
+
+// ── ticket follow-ups (write contract) ──────────────────────────────────────
+model TicketFollowup {
+  id        String   @id
+  ticketId  String
+  authorId  String
+  body      String
+  createdAt DateTime @default(now())
+
+  @@map("ticket_followups")
+}

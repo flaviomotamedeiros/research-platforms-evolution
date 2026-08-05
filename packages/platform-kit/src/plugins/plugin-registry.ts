@@ -1,8 +1,10 @@
-import type { ActivityPlugin, AuthPlugin, BlockPlugin, ContentModulePlugin } from '@rpe/plugin-sdk'
+import type {
+  ActivityPlugin, AuthPlugin, BlockPlugin, ContentModulePlugin, AssetTypePlugin,
+} from '@rpe/plugin-sdk'
 
-type AnyPlugin = ActivityPlugin | AuthPlugin | BlockPlugin | ContentModulePlugin
+type AnyPlugin = ActivityPlugin | AuthPlugin | BlockPlugin | ContentModulePlugin | AssetTypePlugin
 
-export type PluginType = 'activity' | 'auth' | 'block' | 'content' | 'grade_aggregation'
+export type PluginType = 'activity' | 'auth' | 'block' | 'content' | 'asset_type' | 'grade_aggregation'
 
 interface PluginEntry {
   type: PluginType
@@ -55,5 +57,14 @@ export class PluginRegistry {
   getContent(id: string): ContentModulePlugin | undefined {
     const entry = this.registry.get(id)
     return entry?.type === 'content' ? (entry.plugin as ContentModulePlugin) : undefined
+  }
+
+  getAssetType(id: string): AssetTypePlugin | undefined {
+    const entry = this.registry.get(id)
+    return entry?.type === 'asset_type' ? (entry.plugin as AssetTypePlugin) : undefined
+  }
+
+  listAssetTypes(): AssetTypePlugin[] {
+    return this.listByType('asset_type') as AssetTypePlugin[]
   }
 }

@@ -1,0 +1,31 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+  --surface-0: #f5f6f8;
+  --surface-1: #ffffff;
+  --ink-1: #0b0e14;
+  --ink-2: #4a4f5c;
+  --ink-3: #868c99;
+  --series-1: #3d5afe;
+  --series-2: #eb6834;
+  --series-3: #1baf7a;
+  --status-good: #0ca30c;
+  --status-warning: #fab219;
+  --status-serious: #ec835a;
+  --status-critical: #d03b3b;
+  --track: #e7eaf0;
+}
+
+body {
+  background: var(--surface-0);
+  color: var(--ink-1);
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: #3d5afe;
+  color: #fff;
+}
