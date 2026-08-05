@@ -1,0 +1,150 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("MOODLE_DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/moodle-client"
+}
+
+// moodle-next (research-platforms-evolution) — new-system database.
+// PostgreSQL on Neon (see README). Models mirror @rpe/moodle-core aggregates,
+// plus the mod/attendance plugin tables (the paper's write-contract case).
+
+
+model Category {
+  id       String  @id
+  name     String
+  idnumber String?
+
+  @@map("categories")
+}
+
+model Course {
+  id         String  @id
+  fullName   String
+  shortName  String
+  categoryId String
+  visible    Boolean @default(true)
+
+  @@map("courses")
+}
+
+model User {
+  id           String    @id
+  username     String    @unique
+  email        String
+  firstName    String
+  lastName     String
+  passwordHash String
+  role         String    @default("student")
+  deletedAt    DateTime?
+
+  @@map("users")
+}
+
+model Enrollment {
+  id         String    @id
+  userId     String
+  courseId   String
+  role       String
+  status     String
+  enrolledAt DateTime
+  deletedAt  DateTime?
+
+  @@unique([userId, courseId])
+  @@map("enrollments")
+}
+
+model CourseSection {
+  id       String @id
+  courseId String
+  order    Int
+  name     String
+  summary  String
+
+  @@map("course_sections")
+}
+
+model Material {
+  id        String @id
+  courseId  String
+  sectionId String
+  pluginId  String // content module plugin: mod_page | mod_video | mod_url | …
+  title     String
+  content   String // opaque payload owned by the content plugin
+
+  @@map("materials")
+}
+
+model Activity {
+  id          String    @id
+  courseId    String
+  sectionId   String
+  pluginId    String
+  name        String
+  description String    @default("")
+  dueDate     DateTime?
+  visible     Boolean   @default(true)
+
+  @@map("activities")
+}
+
+model Submission {
+  id            String    @id
+  activityId    String
+  enrollmentId  String
+  attemptNumber Int
+  status        String
+  content       String
+  submittedAt   DateTime?
+
+  @@unique([activityId, enrollmentId])
+  @@map("submissions")
+}
+
+model Grade {
+  id                  String  @id
+  enrollmentId        String
+  activityId          String
+  value               Float?
+  maxValue            Float
+  feedback            String?
+  gradingStrategyType String
+
+  @@unique([enrollmentId, activityId])
+  @@map("grades")
+}
+
+model PluginData {
+  pluginId   String
+  collection String
+  key        String
+  value      String
+
+  @@id([pluginId, collection, key])
+  @@map("plugin_data")
+}
+
+// ── mod/attendance (write contract) ─────────────────────────────────────────
+model AttendanceSession {
+  id          String   @id
+  courseId    String
+  date        DateTime
+  description String
+  createdAt   DateTime @default(now())
+
+  @@map("attendance_sessions")
+}
+
+model AttendanceLog {
+  id        String   @id
+  sessionId String
+  userId    String
+  status    String // present | absent | late | excused
+  takenAt   DateTime @default(now())
+
+  @@unique([sessionId, userId])
+  @@map("attendance_logs")
+}

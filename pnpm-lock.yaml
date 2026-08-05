@@ -15,7 +15,7 @@ importers:
         specifier: ^5.6.0
         version: 5.9.3
 
-  apps/glpi:
+  apps/web:
     dependencies:
       '@prisma/client':
         specifier: ^5.20.0
@@ -35,67 +35,6 @@ importers:
       '@rpe/glpi-core':
         specifier: workspace:*
         version: link:../../domains/glpi-core
-      '@rpe/platform-kit':
-        specifier: workspace:*
-        version: link:../../packages/platform-kit
-      '@rpe/plugin-sdk':
-        specifier: workspace:*
-        version: link:../../packages/plugin-sdk
-      bcryptjs:
-        specifier: ^2.4.3
-        version: 2.4.3
-      next:
-        specifier: ^14.2.15
-        version: 14.2.35(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      react:
-        specifier: ^18.3.1
-        version: 18.3.1
-      react-dom:
-        specifier: ^18.3.1
-        version: 18.3.1(react@18.3.1)
-      zod:
-        specifier: ^3.23.8
-        version: 3.25.76
-    devDependencies:
-      '@types/bcryptjs':
-        specifier: ^2.4.6
-        version: 2.4.6
-      '@types/node':
-        specifier: ^20.16.0
-        version: 20.19.43
-      '@types/react':
-        specifier: ^18.3.11
-        version: 18.3.31
-      '@types/react-dom':
-        specifier: ^18.3.0
-        version: 18.3.7(@types/react@18.3.31)
-      autoprefixer:
-        specifier: ^10.4.20
-        version: 10.5.4(postcss@8.5.25)
-      postcss:
-        specifier: ^8.4.47
-        version: 8.5.25
-      prisma:
-        specifier: ^5.20.0
-        version: 5.22.0
-      tailwindcss:
-        specifier: ^3.4.13
-        version: 3.4.19(tsx@4.23.5)
-      tsx:
-        specifier: ^4.19.1
-        version: 4.23.5
-      typescript:
-        specifier: ^5.6.0
-        version: 5.9.3
-
-  apps/moodle:
-    dependencies:
-      '@prisma/client':
-        specifier: ^5.20.0
-        version: 5.22.0(prisma@5.22.0)
-      '@rpe/domain-kit':
-        specifier: workspace:*
-        version: link:../../packages/domain-kit
       '@rpe/mod-page':
         specifier: workspace:*
         version: link:../../plugins/mod-page

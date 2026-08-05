@@ -19,3 +19,6 @@ dist/
 # os / editor
 .DS_Store
 *.log
+
+# prisma generated clients
+apps/*/src/generated/

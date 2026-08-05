@@ -1,0 +1,80 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+  --surface-0: #f5f6f8;
+  --surface-1: #ffffff;
+  --ink-1: #0b0e14;
+  --ink-2: #4a4f5c;
+  --ink-3: #868c99;
+  --series-1: #2a78d6;
+  --series-2: #eb6834;
+  --series-3: #1baf7a;
+  --status-good: #0ca30c;
+  --status-warning: #fab219;
+  --status-serious: #ec835a;
+  --status-critical: #d03b3b;
+  --track: #e7eaf0;
+}
+
+body {
+  background: var(--surface-0);
+  color: var(--ink-1);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Moodle sections theme series-1 blue; GLPI theme series-1 indigo. */
+.theme-glpi { --series-1: #3d5afe; }
+
+::selection { background: #3d5afe; color: #fff; }
+
+/* ── Lesson page typography (rendered lecture HTML) ── */
+.lesson-page {
+  font-size: 0.925rem;
+  line-height: 1.7;
+  color: var(--ink-1);
+}
+.lesson-page h3 {
+  font-size: 1.02rem;
+  font-weight: 700;
+  margin: 1.4em 0 0.5em;
+}
+.lesson-page h3:first-child {
+  margin-top: 0;
+}
+.lesson-page p {
+  margin: 0.6em 0;
+}
+.lesson-page ul,
+.lesson-page ol {
+  margin: 0.6em 0 0.6em 1.4em;
+}
+.lesson-page ul { list-style: disc; }
+.lesson-page ol { list-style: decimal; }
+.lesson-page li { margin: 0.3em 0; }
+.lesson-page code {
+  background: var(--track);
+  border-radius: 4px;
+  padding: 0.1em 0.35em;
+  font-size: 0.85em;
+}
+.lesson-page pre {
+  background: #10233c;
+  color: #dce7f5;
+  border-radius: 10px;
+  padding: 14px 16px;
+  overflow-x: auto;
+  margin: 0.8em 0;
+  font-size: 0.82rem;
+  line-height: 1.55;
+}
+.lesson-page pre code {
+  background: transparent;
+  padding: 0;
+  color: inherit;
+  font-size: inherit;
+}
+.lesson-page strong { font-weight: 700; }
+.lesson-page em { font-style: italic; }
