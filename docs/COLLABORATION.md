@@ -76,11 +76,22 @@ The non-negotiables: **one dataset generator loading both legacy and new**, in
 - **Honesty about scope.** A working demo is not a validated contract. Say what
   you actually verified.
 
-## Getting started
+## Getting started — let Claude guide you (no file-reading needed)
 
-Read `docs/RESEARCH-REPLICATION.md` in full, pick a platform, create your
-branch, and open an issue titled `intent: <platform> — <your name>` so we don't
-double up. Questions welcome.
+This experiment is designed to be handed off **through Claude Code**. You don't
+have to read the docs yourself — Claude reads them and walks you through
+everything. In your cloned repo, open Claude Code and run:
+
+```
+/experiment            # explains the project, checks your setup, creates your branch, picks a platform
+/experiment-step 1     # …then work through steps 1–5, one command at a time
+/experiment-status     # review progress and save results to your branch
+```
+
+Prefer to read first? `docs/RESEARCH-REPLICATION.md` has the full method and
+`docs/DESIGN-NOTES.md` the complete background. Either way, pick a platform,
+create your `researcher/<name>` branch, and save results under
+`results/<platform>/`. Questions welcome — ask Claude, or the maintainer.
 
 Thank you for helping make legacy modernisation in the public sector a little
 less impossible.

@@ -10,11 +10,13 @@ methodology targets each platform's **extension layer**, distinguishing **write
 contracts** (extensions that modify system state) from **read contracts** (extensions
 that aggregate cross-module data without modifying state).
 
-> **Researchers:** the deployed apps are provisional *transferability demos*. To
-> reproduce the methodology rigorously (legacy instrumentation, contract extraction,
-> same-dataset validation at institutional scale), start with
-> **[docs/RESEARCH-REPLICATION.md](docs/RESEARCH-REPLICATION.md)** and the
-> **[call for collaboration](docs/COLLABORATION.md)**.
+> **Researchers — start here.** The deployed apps are provisional *transferability
+> demos*. To reproduce the methodology rigorously, you don't need to read anything:
+> open **Claude Code** in this repo and run **`/experiment`** — it explains the project,
+> sets up your branch, and guides you through the five steps. Background:
+> **[docs/DESIGN-NOTES.md](docs/DESIGN-NOTES.md)** ·
+> method: **[docs/RESEARCH-REPLICATION.md](docs/RESEARCH-REPLICATION.md)** ·
+> invitation: **[docs/COLLABORATION.md](docs/COLLABORATION.md)**.
 
 ## Monorepo layout
 
