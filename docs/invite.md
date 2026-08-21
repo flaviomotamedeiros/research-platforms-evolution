@@ -17,9 +17,17 @@
 > 📌 **O experimento:** modernização de sistemas legados do setor público
 > (Moodle, GLPI, Redmine) — aqueles que a instituição não pode desligar nem
 > reescrever do zero. A ideia é extrair os "contratos de domínio" dos plugins e
-> reimplementar numa stack moderna, sem big-bang. Já validei a metodologia no
-> Moodle; agora quero levar GLPI e Redmine ao mesmo nível, com dados de escala
-> institucional real (~3–4 anos de uso) e validação rigorosa.
+> reimplementar numa stack moderna, sem big-bang. **Eu já validei a
+> metodologia**, mas quero que o experimento seja **executado nos três sistemas**
+> (Moodle, GLPI e Redmine), com dados de escala institucional real (~3–4 anos de
+> uso) e validação rigorosa (mesmo dataset no legado e na reimplementação,
+> comparando as saídas).
+>
+> ⚙️ **A stack já está definida** — deve ser a mesma que especifiquei e que já
+> está no repositório: monorepo pnpm + TypeScript, Next.js (App Router, sem
+> NestJS), Prisma, PostgreSQL no Neon (um banco por sistema), Tailwind, e os
+> pacotes compartilhados `platform-kit` / `plugin-sdk` / `domain-kit`. Não é para
+> trocar a stack — é para seguir a que está lá. O Claude te orienta.
 >
 > 🤝 **Como contrapartida, vou adicionar os interessados como coautores do
 > artigo** — tanto por ajudarem no experimento em si, quanto por participarem de

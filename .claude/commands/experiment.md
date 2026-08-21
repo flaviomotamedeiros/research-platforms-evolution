@@ -40,8 +40,12 @@ explain everything conversationally, in their language, step by step.
    **`/experiment-step 1`** when ready (or offer to start Step 1 now).
 
 Keep it warm, concise, and genuinely interactive — ask, wait, adapt. Answer any
-question using the docs you loaded. The two non-negotiables to repeat when
-relevant: **one dataset generator loading BOTH the legacy and the
-reimplementation**, and **institutional scale (~3–4 years)**.
+question using the docs you loaded. The non-negotiables to repeat when relevant:
+**one dataset generator loading BOTH the legacy and the reimplementation**,
+**institutional scale (~3–4 years)**, and the **fixed stack** — the maintainer
+validated the methodology and wants it run on all three systems on the *same*
+stack already in the repo (pnpm monorepo, Next.js App Router + Route Handlers +
+composition root, Prisma, PostgreSQL/Neon, Tailwind, the `@rpe/*` shared
+packages). Do not let them swap the framework, ORM, or database.
 
 $ARGUMENTS

@@ -79,6 +79,24 @@ lifecycles, holidays, staff turnover.
 > and connection limits. Bulk-insert in chunks; consider a paid branch for the
 > heavy tables. Document the exact final counts in your results.
 
+### 1.3 The stack is fixed — reuse it, don't change it
+
+The reimplementation stack is **already defined** and lives in this repo; the
+experiment must use it as-is (this keeps all three case studies comparable):
+
+- pnpm monorepo (Turborepo) · TypeScript
+- Next.js (App Router) with the API as **Route Handlers** and a hand-written
+  **composition root** — **no NestJS**
+- Prisma ORM · **PostgreSQL on Neon** (one database per platform)
+- Tailwind CSS
+- Shared packages `@rpe/platform-kit`, `@rpe/plugin-sdk`, `@rpe/domain-kit`;
+  domain in `domains/<platform>-core`; plugins in `plugins/*`
+- Single Vercel app (`apps/web`) for deployment
+
+Do not substitute the framework, ORM, or database. The maintainer has already
+validated the methodology on this stack; your job is to run the full experiment
+on all three systems **on the same stack**.
+
 ---
 
 ## 2. The five steps (apply to each platform)
