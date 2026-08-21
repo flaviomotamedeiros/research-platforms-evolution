@@ -10,6 +10,12 @@ methodology targets each platform's **extension layer**, distinguishing **write
 contracts** (extensions that modify system state) from **read contracts** (extensions
 that aggregate cross-module data without modifying state).
 
+> **Researchers:** the deployed apps are provisional *transferability demos*. To
+> reproduce the methodology rigorously (legacy instrumentation, contract extraction,
+> same-dataset validation at institutional scale), start with
+> **[docs/RESEARCH-REPLICATION.md](docs/RESEARCH-REPLICATION.md)** and the
+> **[call for collaboration](docs/COLLABORATION.md)**.
+
 ## Monorepo layout
 
 ```
